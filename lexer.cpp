@@ -35,7 +35,9 @@ enum TokenCode
 	TK_IDENT, // 标识符
 	TK_EOF, // end of file
 	TK_SELF, // self
-	TK_COMMENT // 注释
+	TK_COMMENT, // 注释
+	TK_BOOL,
+	TK_VAR
 };
 
 enum ErrorCode
@@ -45,7 +47,7 @@ enum ErrorCode
 	ERR_FLOAT_DOTS,
 };
 
-#define KEYWORDS_NUM 39
+#define KEYWORDS_NUM 41
 
 typedef struct keyWordPair
 {
@@ -91,9 +93,11 @@ static keyWordPair keyWords[KEYWORDS_NUM] = {
 	{ TK_ELSE,"else",PURPLE },
 	{ TK_RETURN,"return",PURPLE },
 	{ TK_POINTER,"->",RED },
-	{ TK_LIST,"list",PURPLE },
+	{ TK_LIST,"list",BLUE },
 	{ TK_SELF,"self",PURPLE },
-	{ TK_COMMENT,"//",GREEN }
+	{ TK_COMMENT,"//",GREEN },
+	{ TK_BOOL,"bool",BLUE },
+	{ TK_VAR,"var",BLUE }
 };
 
 struct Token;
@@ -288,10 +292,12 @@ void readComment(char* stream, int& index, Lexer* lexer)
 	tk->m_errCode = ERR_NONE;
 	while (stream[index] != '\n')
 	{
-		tk->m_lexeme.push_back(stream[index]++);
+		tk->m_lexeme.push_back(stream[index]);
+		index += 1;
 	}
 	if (tk->m_lexeme[tk->m_lexeme.size() - 1] == '\r')
 		tk->m_lexeme.pop_back();
+
 	tk->m_lineNum = lexer->m_lineNum;
 	tk->m_tkCode = TK_COMMENT;
 	lexer->m_tkStream.push_back(tk);
